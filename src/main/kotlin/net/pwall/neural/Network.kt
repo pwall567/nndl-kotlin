@@ -28,6 +28,17 @@ package net.pwall.neural
 
 import java.util.Random
 
+/**
+ * Neural Network.  This implementation is based on the work of Michael Nielsen in the online
+ * book [Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/).
+ *
+ * I cannot speak highly enough of this book, which gives a clear explanation of the theory
+ * and mathematics of neural networks as well as implementation code in Python which formed the
+ * basis of this Kotlin version.
+ *
+ * @author      Peter Wall
+ * @author      Michael Nielsen (original Python code)
+ */
 class Network(vararg layerSizes: Int) {
 
     val numLayers = layerSizes.size
@@ -48,19 +59,50 @@ class Network(vararg layerSizes: Int) {
         return list.toTypedArray()
     }
 
+    /**
+     * Set the values of all the inputs in a single operation.
+     *
+     * @param   inputs   the new values
+     */
     fun setInputs(inputs: DoubleArray) {
         inputLayer.setInputs(inputs)
     }
 
+    /**
+     * Get the output layer (in this implementation all layers other than the input layer are
+     * called hidden layers; the output layer is the last hidden layer).
+     *
+     * @return  the output layer
+     */
     fun getOutputLayer() : HiddenLayer = hiddenLayers.last()
 
+    /**
+     * Get the outputs of the output layer.
+     *
+     * @return  the outputs
+     */
     fun getOutputs() : DoubleArray = getOutputLayer().outputs
 
+    /**
+     * Initialise the network using the supplied [Random].  The [Random] may be supplied
+     * as an argument to allow the user to use a [Random] with a known seed for repeatable
+     * results.
+     *
+     * @param   r   the [Random]
+     */
     fun init(r: Random = Random()) {
         for (hiddenLayer in hiddenLayers)
             hiddenLayer.init(r)
     }
 
+    /**
+     * Process an array of inputs to produce an array of outputs.  This is the principal
+     * function of a neural network, but for most purposes the full array of outputs is not
+     * required, just the index of the highest output.  For this usage, see [getResultInt].
+     *
+     * @param   inputs  the array of inputs (no length checking is performed)
+     * @return
+     */
     fun getResultArray(inputs: DoubleArray) : DoubleArray {
         setInputs(inputs)
         for (hiddenLayer in hiddenLayers)
@@ -68,8 +110,30 @@ class Network(vararg layerSizes: Int) {
         return getOutputs()
     }
 
+    /**
+     * Process an array of inputs to get a single integer output - the index of the highest
+     * value in the output array.
+     *
+     * @param   inputs  the array of inputs (no length checking is performed)
+     * @return  the index of the highest output
+     */
     fun getResultInt(inputs: DoubleArray) = indexOfHighest(getResultArray(inputs))
 
+    /**
+     * Implementation of the mini-batch Stochastic Gradient Descent algorithm.
+     *
+     * See [Neural Networks and Deep Learning, Chapter 1](http://neuralnetworksanddeeplearning.com/chap1.html) for a
+     * full description of this functionality.
+     *
+     * @param   tds             a [TrainingDataSource]
+     * @param   epochs          number of epochs
+     * @param   miniBatchSize   the size of a mini-batch
+     * @param   eta             the learning rate
+     * @param   r               a [Random], used to shuffle the training data (see the note on [init])
+     * @param   testData        a second [TrainingDataSource] containing test data to
+     *                          evaluate progress (may be `null`)
+     * @throws  IllegalArgumentException if the number of epochs not in allowed range
+     */
     fun stochasticGradientDescent(tds: TrainingDataSource, epochs: Int, miniBatchSize: Int, eta: Double,
             r: Random = Random(), testData: TrainingDataSource?) {
         println("Stochastic Gradient Descent on ${toString()}; training data ${tds.getSize()}; $epochs epochs; " +
@@ -93,6 +157,12 @@ class Network(vararg layerSizes: Int) {
         }
     }
 
+    /**
+     * Implementation of "update_mini_batch".
+     *
+     * @param   miniBatch       the mini-batch
+     * @param   eta             the learning rate
+     */
     private fun updateMiniBatch(miniBatch: TrainingDataSubset, eta: Double) {
         val nablaB = Array(numHiddens) { i -> hiddenLayers[i].getZeroBiasesArray() }
         val nablaW = Array(numHiddens) { i -> hiddenLayers[i].getZeroWeightsArray() }
@@ -112,6 +182,13 @@ class Network(vararg layerSizes: Int) {
         }
     }
 
+    /**
+     * Calculate gradient for the cost function.  `nablaB` and `nablaW` are layer-by-layer lists of [NDArray], similar
+     * to `biases` and `weights`.
+     *
+     * @param   td      the training data item
+     * @return          a [Pair] (`nablaB`, `nablaW`) representing the gradient for the cost function
+     */
     private fun backProp(td: TrainingData) : Pair<Array<NDArray>, Array<NDArray>> {
 
         val x = NDArray.fromDoubleArray(td.getInputs())
@@ -152,6 +229,14 @@ class Network(vararg layerSizes: Int) {
         return outputActivations - y
     }
 
+    /**
+     * Return the number of test inputs for which the neural network outputs the correct result.
+     * Note that the neural network's output is assumed to be the index of whichever neuron in
+     * the final layer has the highest activation.
+     *
+     * @param   testData    the set of test data
+     * @return              the total number of correct results
+     */
     fun evaluate(testData: TrainingDataSource): Int {
         var sum = 0
         for (i in 0 until testData.getSize()) {
