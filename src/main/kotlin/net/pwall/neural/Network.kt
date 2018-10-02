@@ -84,11 +84,10 @@ class Network(vararg layerSizes: Int) {
     fun getOutputs() : DoubleArray = getOutputLayer().outputs
 
     /**
-     * Initialise the network using the supplied [Random].  The [Random] may be supplied
-     * as an argument to allow the user to use a [Random] with a known seed for repeatable
-     * results.
+     * Initialise the network, optionally using the supplied [Random].  The [Random] may be supplied
+     * as an argument to allow the user to use a [Random] with a known seed for repeatable results.
      *
-     * @param   r   the [Random]
+     * @param   r   the [Random] (default is a new [Random])
      */
     fun init(r: Random = Random()) {
         for (hiddenLayer in hiddenLayers)
@@ -101,7 +100,7 @@ class Network(vararg layerSizes: Int) {
      * required, just the index of the highest output.  For this usage, see [getResultInt].
      *
      * @param   inputs  the array of inputs (no length checking is performed)
-     * @return
+     * @return  the output array
      */
     fun getResultArray(inputs: DoubleArray) : DoubleArray {
         setInputs(inputs)
