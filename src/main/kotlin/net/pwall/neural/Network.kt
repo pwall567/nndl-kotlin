@@ -72,8 +72,8 @@ class Network(vararg layerSizes: Int) {
 
     fun stochasticGradientDescent(tds: TrainingDataSource, epochs: Int, miniBatchSize: Int, eta: Double,
             r: Random = Random(), testData: TrainingDataSource?) {
-        println("Stochastic Gradient Descent on " + toString() + "; training data " + tds.getSize() +
-                "; " + epochs + " epochs; mini-batch size " + miniBatchSize + "; eta " + eta)
+        println("Stochastic Gradient Descent on ${toString()}; training data ${tds.getSize()}; $epochs epochs; " +
+                "mini-batch size $miniBatchSize; eta $eta")
         val tdr = TrainingDataRandom(tds)
         if (epochs !in 1..200)
             throw IllegalArgumentException("number of epochs must be in range 1..200")
@@ -88,12 +88,12 @@ class Network(vararg layerSizes: Int) {
             println("Completed epoch " + epoch)
             if (testData != null) {
                 val n = evaluate(testData)
-                println("Correctly identified " + n + " of " + testData.getSize())
+                println("Correctly identified $n of ${testData.getSize()}")
             }
         }
     }
 
-    fun updateMiniBatch(miniBatch: TrainingDataSubset, eta: Double) {
+    private fun updateMiniBatch(miniBatch: TrainingDataSubset, eta: Double) {
         val nablaB = Array(numHiddens) { i -> hiddenLayers[i].getZeroBiasesArray() }
         val nablaW = Array(numHiddens) { i -> hiddenLayers[i].getZeroWeightsArray() }
 
@@ -112,7 +112,7 @@ class Network(vararg layerSizes: Int) {
         }
     }
 
-    fun backProp(td: TrainingData) : Pair<Array<NDArray>, Array<NDArray>> {
+    private fun backProp(td: TrainingData) : Pair<Array<NDArray>, Array<NDArray>> {
 
         val x = NDArray.fromDoubleArray(td.getInputs())
         val y = NDArray.fromDoubleArray(td.getOutputs())
@@ -148,7 +148,7 @@ class Network(vararg layerSizes: Int) {
         return Pair(nablaB, nablaW)
     }
 
-    fun costDerivative(outputActivations: NDArray, y: NDArray) : NDArray {
+    private fun costDerivative(outputActivations: NDArray, y: NDArray) : NDArray {
         return outputActivations - y
     }
 
