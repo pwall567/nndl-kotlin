@@ -72,6 +72,8 @@ class Network(vararg layerSizes: Int) {
 
     fun stochasticGradientDescent(tds: TrainingDataSource, epochs: Int, miniBatchSize: Int, eta: Double,
             r: Random = Random(), testData: TrainingDataSource?) {
+        println("Stochastic Gradient Descent on " + toString() + "; training data " + tds.getSize() +
+                "; " + epochs + " epochs; mini-batch size " + miniBatchSize + "; eta " + eta)
         val tdr = TrainingDataRandom(tds)
         if (epochs !in 1..200)
             throw IllegalArgumentException("number of epochs must be in range 1..200")
@@ -158,6 +160,15 @@ class Network(vararg layerSizes: Int) {
                 sum++
         }
         return sum
+    }
+
+    override fun toString(): String {
+        val sb = StringBuilder("Network[")
+        sb.append(inputLayer.size)
+        for (h in hiddenLayers)
+            sb.append(',').append(h.size)
+        sb.append(']')
+        return sb.toString()
     }
 
     companion object {
