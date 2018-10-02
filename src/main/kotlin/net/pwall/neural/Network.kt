@@ -141,6 +141,7 @@ class Network(vararg layerSizes: Int) {
         val tdr = TrainingDataRandom(tds)
         if (epochs !in 1..200)
             throw IllegalArgumentException("number of epochs must be in range 1..200")
+        var startTime = System.currentTimeMillis()
         for (epoch in 1..epochs) {
             tdr.randomise(r)
             var k = 0
@@ -149,10 +150,14 @@ class Network(vararg layerSizes: Int) {
                 updateMiniBatch(miniBatch, eta)
                 k += miniBatchSize
             }
-            println("Completed epoch " + epoch)
+            var now = System.currentTimeMillis()
+            println("Completed epoch $epoch (${now - startTime}ms)")
+            startTime = now
             if (testData != null) {
                 val n = evaluate(testData)
-                println("Correctly identified $n of ${testData.getSize()}")
+                now = System.currentTimeMillis()
+                println("Correctly identified $n of ${testData.getSize()} (${now - startTime}ms)")
+                startTime = now
             }
         }
     }
