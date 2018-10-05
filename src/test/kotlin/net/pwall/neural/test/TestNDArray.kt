@@ -1,5 +1,5 @@
 /*
- * @(#) InputLayer.kt
+ * @(#) TestNDArray.kt
  *
  * nndl-kotlin Neural Networks and Deep Learning - Kotlin
  * Copyright (c) 2018 Peter Wall
@@ -23,19 +23,19 @@
  * SOFTWARE.
  */
 
-package net.pwall.neural
+package net.pwall.neural.test
 
-class InputLayer(size: Int) : Layer(size) {
+import net.pwall.neural.NDArray
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
-    fun setInput(index: Int, value: Double) {
-        outputs[index] = value
-    }
+class TestNDArray {
 
-    fun setInputs(inputs: DoubleArray) {
-        if (inputs.size != outputs.size)
-            throw IllegalArgumentException("Inputs must be correct size")
-        for (i in inputs.indices)
-            outputs[i] = inputs[i]
+    @Test
+    fun testConstructor() {
+        val obj1 = NDArray(3, 4)
+        assertEquals(3, obj1.dim1)
+        assertEquals(4, obj1.dim2)
     }
 
 }

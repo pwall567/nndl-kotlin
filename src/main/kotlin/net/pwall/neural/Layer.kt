@@ -1,5 +1,5 @@
 /*
- * @(#) Layer.java
+ * @(#) Layer.kt
  *
  * nndl-kotlin Neural Networks and Deep Learning - Kotlin
  * Copyright (c) 2018 Peter Wall

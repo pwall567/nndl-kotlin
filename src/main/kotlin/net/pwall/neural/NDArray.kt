@@ -1,5 +1,5 @@
 /*
- * @(#) NDArray.java
+ * @(#) NDArray.kt
  *
  * nndl-kotlin Neural Networks and Deep Learning - Kotlin
  * Copyright (c) 2018 Peter Wall
@@ -27,7 +27,7 @@ package net.pwall.neural
 
 import java.util.*
 
-class NDArray(private val dim1: Int, private val dim2 : Int, initArray: DoubleArray? = null) {
+class NDArray(val dim1: Int, val dim2 : Int, initArray: DoubleArray? = null) {
 
     private val array = initArray ?: DoubleArray(dim1 * dim2)
 
