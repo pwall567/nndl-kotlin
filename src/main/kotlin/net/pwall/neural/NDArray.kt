@@ -25,7 +25,8 @@
 
 package net.pwall.neural
 
-import java.util.*
+import java.util.Arrays
+import java.util.Random
 
 class NDArray(val dim1: Int, val dim2 : Int, initArray: DoubleArray? = null) {
 
@@ -101,16 +102,15 @@ class NDArray(val dim1: Int, val dim2 : Int, initArray: DoubleArray? = null) {
 
     fun transpose() : NDArray {
         if (dim1 == 1 || dim2 == 1)
-            return NDArray(dim2, dim1, array)
+            return NDArray(dim2, dim1, array.copyOf()) // optimisation - array layout is the same
         return NDArray(dim2, dim1, DoubleArray(dim1 * dim2) { i -> get(i % dim1, i / dim1) })
     }
 
     fun apply(function: (f: Double) -> Double) : NDArray {
-        val newArray = DoubleArray(dim1 * dim2) { i -> function(array[i]) }
-        return NDArray(dim1, dim2, newArray)
+        return NDArray(dim1, dim2, DoubleArray(dim1 * dim2) { i -> function(array[i]) })
     }
 
-    fun copy() = NDArray(dim1, dim2, DoubleArray(dim1 * dim2) { i -> array[i] })
+    fun copy() = NDArray(dim1, dim2, array.copyOf())
 
     override fun equals(other: Any?): Boolean {
         if (other != null && other is NDArray) {
