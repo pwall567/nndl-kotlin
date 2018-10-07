@@ -28,6 +28,18 @@ package net.pwall.neural
 import java.util.Arrays
 import java.util.Random
 
+/**
+ * A class to represent a 2-dimensional array for the neural network implementation.
+ *
+ * The name `NDArray` comes from the "numpy" class which performs this function in the original python code.  In this
+ * case it's something of a misnomer since the name was supposed to refer to an n-dimensional array, but this
+ * implementation only handles 2-dimensional arrays.
+ *
+ * For performance reasons, the array (of [Double]) is stored as a flat array and the [get] and [set] operations
+ * calculate the actual offset into the array.
+ *
+ * @author  Peter Wall
+ */
 class NDArray(val dim1: Int, val dim2 : Int, initArray: DoubleArray? = null) {
 
     private val array = initArray ?: DoubleArray(dim1 * dim2)
@@ -83,14 +95,21 @@ class NDArray(val dim1: Int, val dim2 : Int, initArray: DoubleArray? = null) {
         for (i in array.indices)
             array[i] *= other.array[i]
     }
-
+    /**
+     * Matrix multiplication of two [NDArray]s.  Do a web search for "matrix multiplication" for an explanation.
+     * The second dimension of the first array must equal the first dimension of the second array.
+     *
+     * @param   other   the other [NDArray]
+     * @return          the matrix product
+     * @throws  IllegalArgumentException if the arrays are of incompatible dimensions
+     */
     infix fun dot(other: NDArray) : NDArray {
         if (dim2 != other.dim1)
             throw IllegalArgumentException("Array dimensions not compatible")
         return NDArray(dim1, other.dim2, DoubleArray(dim1 * other.dim2, fun (x: Int) : Double {
             var sum = 0.0
             for (k in 0 until dim2)
-                sum += get(x / other.dim2, k) * other[k, x % other.dim2]
+                sum += this[x / other.dim2, k] * other[k, x % other.dim2]
             return sum
         }))
     }
