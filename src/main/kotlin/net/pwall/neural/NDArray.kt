@@ -95,6 +95,7 @@ class NDArray(val dim1: Int, val dim2 : Int, initArray: DoubleArray? = null) {
         for (i in array.indices)
             array[i] *= other.array[i]
     }
+
     /**
      * Matrix multiplication of two [NDArray]s.  Do a web search for "matrix multiplication" for an explanation.
      * The second dimension of the first array must equal the first dimension of the second array.
@@ -114,17 +115,37 @@ class NDArray(val dim1: Int, val dim2 : Int, initArray: DoubleArray? = null) {
         }))
     }
 
-    fun init(r: Random) {
+    /**
+     * Initialise the array with Gaussian distributed values (mean `0.0`, standard deviation `1.0`).  The [Random] used
+     * as the source of the values may be supplied as an argument to allow the user to use a [Random] with a known seed
+     * for repeatable results.
+     *
+     * @param   r       the [Random] (default is a new [Random])
+     */
+    fun init(r: Random = Random()) {
         for (i in array.indices)
             array[i] = r.nextGaussian()
     }
 
+    /**
+     * Transpose the two dimensions of the array, so that an array of dimension x,y becomes y,x.
+     *
+     * Note that when either dimension is `1`, the layout of the actual array is unchanged so this case is optimised.
+     *
+     * @return  a new [NDArray] with the dimensions transposed
+     */
     fun transpose() : NDArray {
         if (dim1 == 1 || dim2 == 1)
             return NDArray(dim2, dim1, array.copyOf()) // optimisation - array layout is the same
         return NDArray(dim2, dim1, DoubleArray(dim1 * dim2) { i -> get(i % dim1, i / dim1) })
     }
 
+    /**
+     * Apply a function to each [Double] in the array, creating a new array.
+     *
+     * @param   function    a function that takes a [Double] and returns a [Double]
+     * @return  the new [NDArray]
+     */
     fun apply(function: (f: Double) -> Double) : NDArray {
         return NDArray(dim1, dim2, DoubleArray(dim1 * dim2) { i -> function(array[i]) })
     }
