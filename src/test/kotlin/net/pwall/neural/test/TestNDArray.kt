@@ -329,4 +329,46 @@ class TestNDArray {
         assertEquals("Array dimensions not compatible", throwable.message)
     }
 
+    @Test
+    fun testTranspose() {
+        val nda1 = NDArray(2, 3, doubleArrayOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0))
+        val nda2 = nda1.transpose()
+        assertEquals(3, nda2.dim1)
+        assertEquals(2, nda2.dim2)
+        assertEquals(1.0, nda2[0, 0], delta)
+        assertEquals(2.0, nda2[1, 0], delta)
+        assertEquals(3.0, nda2[2, 0], delta)
+        assertEquals(4.0, nda2[0, 1], delta)
+        assertEquals(5.0, nda2[1, 1], delta)
+        assertEquals(6.0, nda2[2, 1], delta)
+        // now check that the original object was not modified
+        assertEquals(1.0, nda1[0, 0], delta)
+        assertEquals(2.0, nda1[0, 1], delta)
+        assertEquals(3.0, nda1[0, 2], delta)
+        assertEquals(4.0, nda1[1, 0], delta)
+        assertEquals(5.0, nda1[1, 1], delta)
+        assertEquals(6.0, nda1[1, 2], delta)
+    }
+
+    @Test
+    fun testApply() {
+        val nda1 = NDArray(2, 3, doubleArrayOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0))
+        val nda2 = nda1.apply { i -> i + i }
+        assertEquals(2, nda2.dim1)
+        assertEquals(3, nda2.dim2)
+        assertEquals(2.0, nda2[0, 0], delta)
+        assertEquals(4.0, nda2[0, 1], delta)
+        assertEquals(6.0, nda2[0, 2], delta)
+        assertEquals(8.0, nda2[1, 0], delta)
+        assertEquals(10.0, nda2[1, 1], delta)
+        assertEquals(12.0, nda2[1, 2], delta)
+        // now check that the original object was not modified
+        assertEquals(1.0, nda1[0, 0], delta)
+        assertEquals(2.0, nda1[0, 1], delta)
+        assertEquals(3.0, nda1[0, 2], delta)
+        assertEquals(4.0, nda1[1, 0], delta)
+        assertEquals(5.0, nda1[1, 1], delta)
+        assertEquals(6.0, nda1[1, 2], delta)
+    }
+
 }
