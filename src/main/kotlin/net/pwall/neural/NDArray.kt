@@ -107,12 +107,16 @@ class NDArray(val dim1: Int, val dim2 : Int, initArray: DoubleArray? = null) {
     infix fun dot(other: NDArray) : NDArray {
         if (dim2 != other.dim1)
             throw IllegalArgumentException("Array dimensions not compatible")
-        return NDArray(dim1, other.dim2, DoubleArray(dim1 * other.dim2, fun (x: Int) : Double {
-            var sum = 0.0
-            for (k in 0 until dim2)
-                sum += this[x / other.dim2, k] * other[k, x % other.dim2]
-            return sum
-        }))
+        val newArray = DoubleArray(dim1 * other.dim2)
+        for (i in 0 until dim1) {
+            for (j in 0 until other.dim2) {
+                var sum = 0.0
+                for (k in 0 until dim2)
+                    sum += this[i, k] * other[k, j]
+                newArray[i * other.dim2 + j] = sum
+            }
+        }
+        return NDArray(dim1, other.dim2, newArray)
     }
 
     /**
